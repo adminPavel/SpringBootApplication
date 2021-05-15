@@ -15,7 +15,12 @@ public class Product {
     @Id
     @SequenceGenerator(name = "product_id_seq", sequenceName = "product_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
+
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private User user;
 
     @Column
     private String product_name;
