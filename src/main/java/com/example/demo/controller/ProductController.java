@@ -1,16 +1,14 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ProductDto;
-import com.example.demo.dto.UserDto;
 import com.example.demo.exeption.ValidationException;
-import com.example.demo.repository.MapRepository;
-import com.example.demo.repository.UserService;
+import com.example.demo.repository.MapRepositoryProduct;
+import com.example.demo.repository.ProductService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -20,44 +18,44 @@ import java.util.List;
 @Data
 public class ProductController {
 
-    private final UserService userService;
-    private final MapRepository maprepository;
+    private final ProductService productService;
+    private final MapRepositoryProduct mapRepositoryProduct;
 
     @PostMapping("/addproduct")
-    public ProductDto saveUsers(@RequestBody ProductDto productDto) throws ValidationException {
-        log.info("Handling save users: " + productDto);
-        return userService.saveUser(productDto);
+    public ProductDto addProduct(@RequestBody ProductDto productDto) throws ValidationException{
+        log.info("Handling add products request");
+        return productService.addProduct(productDto);
     }
 
     @GetMapping("/findAll")
-    public List<UserDto> findAllUsers() {
+    public List<ProductDto> findAllUsers() {
         log.info("Handling find all users request");
-        return userService.findAll();
+        return productService.findAll();
     }
 
-    @GetMapping("/findUserByLogin")
-    public UserDto findUserByLogin(@RequestParam String login) {
-        log.info("Handling find by login request: " + login);
-        return userService.findUserByLogin(login);
+    @GetMapping("/findProductByName")
+    public ProductDto findProductOnName(@RequestParam String product_name) {
+        log.info("Handling find by login request: " + product_name);
+        return productService.findProductOnName(product_name);
     }
 
-    @GetMapping("/findUserById")
-    public UserDto findById(@RequestParam Long id) throws ValidationException {
+    @GetMapping("/findProductById")
+    public ProductDto findById(@RequestParam Long id) throws ValidationException {
         log.info("Handling find by login request: " + id);
-        return userService.findUserById(id);
+
+        return productService.findProductById(id);
     }
 
     @PutMapping("/update/{id}")
-    public UserDto update(@RequestBody UserDto userDto, @PathVariable Long id) throws ValidationException {
+    public ProductDto update(@RequestBody ProductDto productDto, @PathVariable Long id) throws ValidationException {
         log.info("Handling find by login request: " + id);
-        return userService.update(userDto, id);
+        return productService.update(productDto, id);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUsers(@PathVariable Long id) throws ValidationException {
         log.info("Handling delete user request: " + id);
-        userService.deleteUser(id);
+        productService.deleteProduct(id);
         return ResponseEntity.ok().build();
     }
-
 }

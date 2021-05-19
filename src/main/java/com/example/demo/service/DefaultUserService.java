@@ -3,15 +3,12 @@ package com.example.demo.service;
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
 import com.example.demo.exeption.ValidationException;
-import com.example.demo.repository.MapRepository;
-import com.example.demo.repository.UserIdRepository;
+import com.example.demo.repository.MapRepositoryUser;
 import com.example.demo.repository.UserLoginRepository;
 import com.example.demo.repository.UserService;
 import lombok.AllArgsConstructor;
-import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
@@ -21,9 +18,8 @@ import static java.util.Objects.isNull;
 public class DefaultUserService implements UserService {
 
     private final UserLoginRepository userLoginRepository;
-    private final UserIdRepository userIdRepository;
     private final UserConverter userConverter;
-    private final MapRepository mapRepository;
+    private final MapRepositoryUser mapRepository;
 
     private void validateUserDto(UserDto usersDto) throws ValidationException {
         if (isNull(usersDto)) {
@@ -64,7 +60,9 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void deleteUser(Long userId) throws ValidationException {
+
         userLoginRepository.deleteById(userId);
+
     }
 
     @Override
@@ -78,23 +76,17 @@ public class DefaultUserService implements UserService {
 
     @Override
     public UserDto findUserById(Long id) {
-        User user = userIdRepository.findUserById(id);
-        if (user != null) {
-            return userConverter.fromUserToUserDto(user);
-        }
-        return null;
+        Optional<User> user = mapRepository.findById(id);
+        return userConverter.fromUserToUserDto(user);
     }
 
-/*
     @Override
-    public UserDto findById(Long id) {
-        Optional<User> user = userIdRepository.findById(id);
-        if (userIdRepository.findById(id).isPresent()) {
-        return userConverter.fromUserToUserDtoOptional(user);
-        }
-        return null;
+    public List<UserDto> listOfUsers() {
+        return userLoginRepository.findAll()
+                .stream()
+                .map(userConverter::fromUserToUserDto)
+                .collect(Collectors.toList());
     }
-    */
 
     @Override
     public List<UserDto> findAll() {

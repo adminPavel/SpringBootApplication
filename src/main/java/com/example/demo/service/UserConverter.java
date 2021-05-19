@@ -4,8 +4,21 @@ import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class UserConverter {
+
+    public UserDto fromUserToUserDto(Optional<User> user) {
+        return UserDto.builder()
+                .id(user.orElseThrow().getId())
+                .name(user.orElseThrow().getName())
+                .surname(user.orElseThrow().getSurname())
+                .login(user.orElseThrow().getLogin())
+                .password(user.orElseThrow().getPassword())
+                .email(user.orElseThrow().getEmail())
+                .build();
+    }
 
     public UserDto fromUserToUserDto(User user) {
         return UserDto.builder()

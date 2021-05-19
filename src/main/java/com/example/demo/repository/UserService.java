@@ -11,4 +11,5 @@ public interface UserService {
     UserDto findUserById(Long id) throws ValidationException;
     List<UserDto> findAll();
     UserDto update(UserDto userDto, Long id) throws ValidationException;
+    List<UserDto> listOfUsers();
 }

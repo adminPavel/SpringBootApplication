@@ -19,11 +19,12 @@ public class Product {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
-    private User user;
+    @JoinColumn(name = "id", insertable = false, updatable = false)
+
+    private Product product;
 
     @Column
-    private String product_name;
+    private String productname;
 
     @Column
     private String color;

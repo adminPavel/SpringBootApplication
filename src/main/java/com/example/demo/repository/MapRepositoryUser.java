@@ -3,6 +3,5 @@ package com.example.demo.repository;
 import com.example.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserIdRepository extends JpaRepository<User, Long> {
-    User findUserById(Long id);
+public interface MapRepositoryUser extends JpaRepository<User, Long> {
 }

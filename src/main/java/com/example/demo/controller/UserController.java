@@ -1,19 +1,19 @@
 package com.example.demo.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
+
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
 import com.example.demo.exeption.ValidationException;
-import com.example.demo.repository.MapRepository;
+import com.example.demo.repository.MapRepositoryUser;
 import com.example.demo.repository.UserService;
+import com.example.demo.service.UserConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/users")
@@ -23,7 +23,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final MapRepository maprepository;
+    private final MapRepositoryUser mapRepository;
+    private final UserConverter userConverter;
+
+//    @RequestMapping("/")
+//    public String row() {
+//        System.out.println("hello");
+//        log.info("Handling review list users: ");
+//        System.out.println("hello");
+//        return null;
+//    }
 
     @PostMapping("/save")
     public UserDto saveUsers(@RequestBody UserDto userDto) throws ValidationException {
@@ -33,7 +42,7 @@ public class UserController {
 
     @GetMapping("/findAll")
     public List<UserDto> findAllUsers() {
-        log.info("Handling find all users request");
+        log.info("Handling find all users request: ");
         return userService.findAll();
     }
 
@@ -46,7 +55,9 @@ public class UserController {
     @GetMapping("/findUserById")
     public UserDto findById(@RequestParam Long id) throws ValidationException {
         log.info("Handling find by login request: " + id);
-        return userService.findUserById(id);
+        Optional<User> user = mapRepository.findById(id);
+        //return userConverter.fromUserToUserDto(user);
+        return userService.findUserById(userConverter.fromUserToUserDto(user).getId());
     }
 
     @PutMapping("/update/{id}")

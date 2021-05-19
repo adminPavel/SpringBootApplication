@@ -29,14 +29,13 @@ public class User {
     @Column(name = "surname")
     private String surname;
 
-
     @Column(name = "login")
     private String login;
 
-    @Email
     @Column(name = "password")
     private String password;
 
+    @Email
     @Column (name = "email")
     private String email;
 
