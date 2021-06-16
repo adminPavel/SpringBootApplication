@@ -4,20 +4,21 @@ import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
 import com.example.demo.exeption.ValidationException;
 import com.example.demo.repository.MapRepositoryUser;
-import com.example.demo.repository.UserLoginRepository;
 import com.example.demo.repository.UserService;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
 import static java.util.Objects.isNull;
 
 @Service
 @AllArgsConstructor
+@Data
 public class DefaultUserService implements UserService {
 
-    private final UserLoginRepository userLoginRepository;
+  //  private final UserService userService;
     private final UserConverter userConverter;
     private final MapRepositoryUser mapRepository;
 
@@ -30,11 +31,23 @@ public class DefaultUserService implements UserService {
         }
     }
 
+//    @Override
+//    public UserDto saveUserAlex(User user) throws ValidationException {
+//        User alex = User.of("Alex", "123", "123@gmail.com");
+//        alex.setName("Alex");
+//        alex.setSurname("Ivanov");
+//
+//        validateUserDto(userDto); //валидация входящих данных о юзере
+//        User user = userConverter.fromUserDtoToUser(userDto); //конвертация из UserDto в User
+//        User savedUser = mapRepository.save(user);// сохранение в БД
+//        return userConverter.fromUserToUserDto(savedUser); //конвертация сохраненного юзера обратно в UserDTo и возврат
+//    }
+
     @Override
     public UserDto saveUser(UserDto userDto) throws ValidationException {
         validateUserDto(userDto); //валидация входящих данных о юзере
         User user = userConverter.fromUserDtoToUser(userDto); //конвертация из UserDto в User
-        User savedUser = userLoginRepository.save(user);// сохранение в БД
+        User savedUser = mapRepository.save(user);// сохранение в БД
         return userConverter.fromUserToUserDto(savedUser); //конвертация сохраненного юзера обратно в UserDTo и возврат
     }
 
@@ -43,13 +56,13 @@ public class DefaultUserService implements UserService {
         validateUserDto(userDto);
         User user = userConverter.fromUserDtoToUser(userDto);
 
-          return mapRepository.findById(id)
+        return mapRepository.findById(id)
                 .map(employee -> {
                     employee.setName(user.getName());
                     employee.setLogin(user.getLogin());
                     employee.setPassword(user.getPassword());
-                    employee.setName(user.getEmail());
-                    employee.setName(user.getSurname());
+                    employee.setEmail(user.getEmail());
+                    employee.setSurname(user.getSurname());
                     return userConverter.fromUserToUserDto(mapRepository.save(employee));
                 })
                 .orElseGet(() -> {
@@ -59,19 +72,52 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void deleteUser(Long userId) throws ValidationException {
-
-        userLoginRepository.deleteById(userId);
-
+    public void deleteUser(Long userId) {
+        mapRepository.deleteById(userId);
     }
 
     @Override
     public UserDto findUserByLogin(String login) {
-        User user = userLoginRepository.findUserByLogin(login);
-        if (user != null) {
-            return userConverter.fromUserToUserDto(user);
+        User user = mapRepository.findUserByLogin(login);
+        return userConverter.fromUserToUserDto(user);
+    }
+
+    @Override
+    public List<UserDto> searchByValue(String key) {
+        if(key != null) {
+            return userConverter.fromUserListToUserDtoList(mapRepository.searchByValue(key));
         }
-        return null;
+        return mapRepository.findAll()
+                .stream()
+                .map(userConverter::fromUserToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean checkIfValidOldPassword (UserDto userDto, String newPassword) {
+        if(userDto.getPassword().equals(newPassword)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public UserDto changePassword(Long id, String newPassword) throws ValidationException{
+        UserDto userDto = findUserById(id);
+        //UserDto userDto = userConverter.fromUserToUserDto(user);
+        System.out.println("000000000000000000");
+        if (checkIfValidOldPassword(userDto, newPassword)) {
+            ValidationException validationException = new ValidationException("New password  equals OldPassword");
+            System.out.println(validationException);
+        }
+        System.out.println("1111111111111111111");
+        userDto.setPassword(newPassword);
+        System.out.println("2222222222222222222");
+
+        saveUser(userDto);
+        System.out.println("3333333333333333");
+
+        return userDto;
     }
 
     @Override
@@ -81,16 +127,8 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public List<UserDto> listOfUsers() {
-        return userLoginRepository.findAll()
-                .stream()
-                .map(userConverter::fromUserToUserDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<UserDto> findAll() {
-        return userLoginRepository.findAll()
+        return mapRepository.findAll()
                 .stream()
                 .map(userConverter::fromUserToUserDto)
                 .collect(Collectors.toList());

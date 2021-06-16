@@ -4,7 +4,10 @@ import com.example.demo.dto.UserDto;
 import com.example.demo.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class UserConverter {
@@ -19,6 +22,25 @@ public class UserConverter {
                 .email(user.orElseThrow().getEmail())
                 .build();
     }
+
+    public List<UserDto> fromUserListToUserDtoList(List<User> users) {
+        List<UserDto> usersDTO = new ArrayList<>();
+        for (User u: users) {
+            UserDto userDto = fromUserToUserDto(u);
+            usersDTO.add(userDto);
+        }
+        return usersDTO;
+    }
+
+    public List<User> fromUserDtoListToUserList(List<UserDto> usersDto) {
+        List<User> users = new ArrayList<>();
+        for (UserDto u: usersDto) {
+            User user = fromUserDtoToUser(u);
+            users.add(user);
+        }
+        return users;
+    }
+
 
     public UserDto fromUserToUserDto(User user) {
         return UserDto.builder()

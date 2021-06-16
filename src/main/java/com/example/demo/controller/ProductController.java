@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ProductDto;
+import com.example.demo.dto.UserDto;
 import com.example.demo.exeption.ValidationException;
 import com.example.demo.repository.MapRepositoryProduct;
 import com.example.demo.repository.ProductService;
@@ -34,16 +35,21 @@ public class ProductController {
     }
 
     @GetMapping("/findProductByName")
-    public ProductDto findProductOnName(@RequestParam String product_name) {
-        log.info("Handling find by login request: " + product_name);
-        return productService.findProductOnName(product_name);
+    public ProductDto findProductByProductname(@RequestParam String productname) throws ValidationException{
+        log.info("Handling find by login request: " + productname);
+        return productService.findProductByProductname(productname);
     }
 
     @GetMapping("/findProductById")
     public ProductDto findById(@RequestParam Long id) throws ValidationException {
         log.info("Handling find by login request: " + id);
-
         return productService.findProductById(id);
+    }
+
+    @GetMapping("/search/{key}")
+    public List<ProductDto> searchByValue(@RequestParam(value = "key") String key) throws ValidationException{
+        log.info("Handling find by key word request: " + key);
+        return productService.searchByValue(key);
     }
 
     @PutMapping("/update/{id}")

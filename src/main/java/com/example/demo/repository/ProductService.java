@@ -10,9 +10,10 @@ public interface ProductService {
 
     ProductDto addProduct (ProductDto productDto) throws ValidationException;
     void deleteProduct (Long userId) throws ValidationException;
-    ProductDto findProductOnName (String productname);
+    ProductDto findProductByProductname (String productname)throws ValidationException;
     ProductDto findProductById(Long id) throws ValidationException;
     List<ProductDto> findAll();
     ProductDto update(ProductDto productDto, Long id) throws ValidationException;
+    List<ProductDto> searchByValue(String key) throws ValidationException;
 
 }
